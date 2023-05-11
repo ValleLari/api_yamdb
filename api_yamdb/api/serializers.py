@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from reviews.models import (Category, Genre, Title)
 
-from api_yamdb.settings import value
-
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериалайзер категорий."""
@@ -39,9 +37,3 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'year', 'description', 'genre', 'category'
         )
-
-    def validate_year(self, year):
-        """Валидация поля year."""
-        if not (value <= year):
-            raise serializers.ValidationError('Некорректный год')
-        return year
