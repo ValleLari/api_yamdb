@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
-from reviews.models import Review
+from reviews.models import Review, Title
 from .serializers import CommentSerializer, ReviewSerializer
+from django.db.models import Avg
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -43,3 +44,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             author=self.request.user,
             review=self.get_review()
         )
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(
+        rating=Avg("reviews__score")).all()
