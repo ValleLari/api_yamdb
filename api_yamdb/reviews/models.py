@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from reviews.validators import validate_year
+from api.models import CustomUserManager
 
 
 class Title(models.Model):
@@ -113,7 +114,7 @@ class TitleGenre(models.Model):
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        CustomUserManager, on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Автор'
     )
@@ -155,7 +156,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        CustomUserManager, on_delete=models.CASCADE,
         related_name='comments',
         verbose_name='Автор'
     )
