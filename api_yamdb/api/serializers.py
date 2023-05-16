@@ -1,35 +1,61 @@
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import Category, Comment, Genre, Review, Title
-from users.models import User
-from django.core.validators import MaxLengthValidator
+
+from reviews.models import Category, Comment, Genre, Review, Title, User
+
+valid_username = UnicodeUsernameValidator()
+
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
-            UniqueValidator(queryset=User.objects.all())
+            UniqueValidator(queryset=User.objects.all()),
+            valid_username,
         ],
         required=True,
+        max_length=150,
     )
     email = serializers.EmailField(
+        required=True,
+        max_length=254,
         validators=[
             UniqueValidator(queryset=User.objects.all()),
-            MaxLengthValidator(254) 
-        ]
+        ],
     )
 
     class Meta:
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
         model = User
 
 
 class UserEditSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150,
+        validators=[
+            UniqueValidator(queryset=User.objects.all()),
+            valid_username,
+        ],
+        required=True,
+    )
+
     class Meta:
         model = User
         fields = (
-            'username', 'email', 'first_name',
-            'last_name', 'bio', 'role')
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
         read_only_fields = ('role',)
 
 
@@ -39,28 +65,23 @@ class TokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = (
-            'confirmation_code',
-            'username'
-        )
+        fields = ('confirmation_code', 'username')
         extra_kwargs = {
             'username': {
-                'validators': [
-                    UniqueValidator(queryset=User.objects.all())
-                ]
+                'validators': [UniqueValidator(queryset=User.objects.all())]
             }
         }
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        required=True,
+        max_length=150,
         validators=[
-            UniqueValidator(queryset=User.objects.all())]
+            valid_username,
+        ],
     )
     email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        max_length=254,
     )
 
     class Meta:
@@ -74,27 +95,38 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
         return user
 
+    def validate(self, data):
+        if (
+            User.objects.filter(username=data['username']).exists()
+            and User.objects.get(username=data['username']).email
+            != data['email']
+        ):
+            raise serializers.ValidationError(
+                'Неверна указана почта, или логин уже занят!',
+            )
+        if (
+            User.objects.filter(email=data['email']).exists()
+            and User.objects.get(email=data['email']).username
+            != data['username']
+        ):
+            raise serializers.ValidationError('Неверный логин')
+        return data
+
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Category
         exclude = ('id',)
         lookup_field = 'slug'
-        extra_kwargs = {
-            'url': {'lookup_field': 'slug'}
-        }
+        extra_kwargs = {'url': {'lookup_field': 'slug'}}
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Genre
         exclude = ('id',)
         lookup_field = 'slug'
-        extra_kwargs = {
-            'url': {'lookup_field': 'slug'}
-        }
+        extra_kwargs = {'url': {'lookup_field': 'slug'}}
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -118,7 +150,13 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category',
         )
 
 

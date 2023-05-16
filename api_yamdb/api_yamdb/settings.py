@@ -17,7 +17,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'users.apps.UserConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -25,10 +24,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
     'django_filters',
-    'core.apps.CoreConfig',
     'reviews.apps.ReviewsConfig',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -113,7 +111,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 DATA_DIR = os.path.join(BASE_DIR, "static", "data")
 
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'reviews.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
@@ -129,7 +127,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.'
-                                'PageNumberPagination',
+    'PageNumberPagination',
     'PAGE_SIZE': 10,
 }
 
@@ -147,3 +145,5 @@ MID_INT_LENGTH = 200
 MID_SMALL_INT_LENGTH = 150
 
 SMALL_INT_LENGTH = 50
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

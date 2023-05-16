@@ -9,18 +9,28 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Comment, Genre, Review, Title
-from users.models import User
+
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet
-from .permissions import (IsAdmin, IsAdminModeratorAuthorOrReadOnly,
-                          IsAdminOrSuperuserOrReadOnly)
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReadOnlyTitleSerializer,
-                          RegisterSerializer, ReviewSerializer,
-                          TitleSerializer, TokenSerializer, UserEditSerializer,
-                          UserSerializer)
+from .permissions import (
+    IsAdmin,
+    IsAdminModeratorAuthorOrReadOnly,
+    IsAdminOrSuperuserOrReadOnly,
+)
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReadOnlyTitleSerializer,
+    RegisterSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    TokenSerializer,
+    UserEditSerializer,
+    UserSerializer,
+)
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
@@ -34,6 +44,7 @@ class CategoryViewSet(ListCreateDestroyViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    http_method_names = ['get', 'post', 'delete', 'patch']
     serializer_class = UserSerializer
     permission_classes = (IsAdmin,)
     filter_backends = (filters.SearchFilter,)
@@ -41,21 +52,19 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
     lookup_field = 'username'
 
-    @action(methods=['GET', 'PATCH'],
-            detail=False,
-            serializer_class=UserEditSerializer,
-            permission_classes=[permissions.IsAuthenticated],
-            url_path='me')
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=False,
+        serializer_class=UserEditSerializer,
+        permission_classes=[permissions.IsAuthenticated],
+        url_path='me',
+    )
     def user_self_profile(self, request):
         user = request.user
         if request.method == 'GET':
             serializer = self.get_serializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = self.get_serializer(
-            user,
-            data=request.data,
-            partial=True
-        )
+        serializer = self.get_serializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -66,8 +75,9 @@ class UserViewSet(viewsets.ModelViewSet):
 def get_jwt_token(request):
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(User,
-                             username=serializer.validated_data['username'])
+    user = get_object_or_404(
+        User, username=serializer.validated_data['username']
+    )
     if default_token_generator.check_token(
         user, serializer.validated_data['confirmation_code']
     ):
@@ -81,9 +91,10 @@ def get_jwt_token(request):
 def create_user(request):
     serializer = RegisterSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    serializer.save()
-    user = get_object_or_404(User,
-                             username=serializer.validated_data['username'])
+    user, _ = User.objects.get_or_create(
+        username=serializer.validated_data['username'],
+        email=serializer.validated_data['email'],
+    )
     confirmation_code = default_token_generator.make_token(user)
     send_mail(
         subject='Регистрация на yamdb',
@@ -129,8 +140,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         if Review.objects.filter(
-            title=title,
-            author=self.request.user
+            title=title, author=self.request.user
         ).exists():
             raise ParseError
         serializer.save(author=self.request.user, title=title)
@@ -145,7 +155,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = get_object_or_404(
             Review,
             title_id=self.kwargs.get('title_id'),
-            pk=self.kwargs.get('review_id')
+            pk=self.kwargs.get('review_id'),
         )
         return review.comments.all().order_by('id')
 
@@ -153,6 +163,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = get_object_or_404(
             Review,
             title_id=self.kwargs.get('title_id'),
-            pk=self.kwargs.get('review_id')
+            pk=self.kwargs.get('review_id'),
         )
         serializer.save(author=self.request.user, review=review)

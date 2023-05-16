@@ -1,8 +1,16 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import include, path
-from .views import (CategoryViewSet, CommentViewSet, GenreViewSet,
-                    ReviewViewSet, TitleViewSet, UserViewSet, create_user,
-                    get_jwt_token)
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    CategoryViewSet,
+    CommentViewSet,
+    GenreViewSet,
+    ReviewViewSet,
+    TitleViewSet,
+    UserViewSet,
+    create_user,
+    get_jwt_token,
+)
 
 router = DefaultRouter()
 router.register('users', UserViewSet, basename='users')
@@ -16,7 +24,7 @@ router.register(
 router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentViewSet,
-    basename='comments'
+    basename='comments',
 )
 
 auth_urlpatterns = [
