@@ -25,8 +25,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+<<<<<<< Updated upstream
     'django_filters',
     'api',
+=======
+    'rest_framework_simplejwt',
+    'django_filters',
+    'core.apps.CoreConfig',
+>>>>>>> Stashed changes
     'reviews.apps.ReviewsConfig',
 ]
 
