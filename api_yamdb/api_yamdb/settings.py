@@ -1,7 +1,9 @@
-from pathlib import Path
+import os
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from datetime import timedelta
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
@@ -13,6 +15,7 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,6 +23,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
+    'reviews.apps.ReviewsConfig',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -34,7 +41,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api_yamdb.urls'
 
-TEMPLATES_DIR = BASE_DIR / 'templates'
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -59,7 +66,7 @@ WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -99,4 +106,44 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
+
+DATA_DIR = os.path.join(BASE_DIR, "static", "data")
+
+
+AUTH_USER_MODEL = 'reviews.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
+DEFAULT_FROM_EMAIL = 'admin@yamdb.com'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.'
+    'PageNumberPagination',
+    'PAGE_SIZE': 10,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+VERY_BIG_INT_LENGTH = 500
+
+BIG_INT_LENGTH = 254
+
+MID_INT_LENGTH = 200
+
+MID_SMALL_INT_LENGTH = 150
+
+SMALL_INT_LENGTH = 50
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
