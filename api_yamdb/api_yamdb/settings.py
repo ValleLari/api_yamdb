@@ -1,11 +1,9 @@
 import os
 
-from pathlib import Path
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
@@ -17,22 +15,20 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+
 INSTALLED_APPS = [
+    'users.apps.UserConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-<<<<<<< Updated upstream
-    'django_filters',
     'api',
-=======
+    'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
     'core.apps.CoreConfig',
->>>>>>> Stashed changes
     'reviews.apps.ReviewsConfig',
 ]
 
@@ -53,6 +49,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [TEMPLATES_DIR],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -134,6 +131,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.'
                                 'PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 SIMPLE_JWT = {
@@ -141,3 +139,12 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+VERY_BIG_INT_LENGTH = 500
+
+BIG_INT_LENGTH = 256
+
+MID_INT_LENGTH = 200
+
+MID_SMALL_INT_LENGTH = 150
+
+SMALL_INT_LENGTH = 50
