@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
@@ -141,7 +140,7 @@ SIMPLE_JWT = {
 
 VERY_BIG_INT_LENGTH = 500
 
-BIG_INT_LENGTH = 256
+BIG_INT_LENGTH = 254
 
 MID_INT_LENGTH = 200
 

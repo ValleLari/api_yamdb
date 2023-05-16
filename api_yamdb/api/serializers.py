@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
-
+from django.core.validators import MaxLengthValidator
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -13,7 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
     )
     email = serializers.EmailField(
         validators=[
-            UniqueValidator(queryset=User.objects.all())
+            UniqueValidator(queryset=User.objects.all()),
+            MaxLengthValidator(254) 
         ]
     )
 
