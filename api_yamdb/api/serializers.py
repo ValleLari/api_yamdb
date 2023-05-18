@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-
-from reviews.models import Category, Comment, Genre, Review, Title, User
+from users.models import User
+from reviews.models import Category, Comment, Genre, Review, Title
 
 valid_username = UnicodeUsernameValidator()
 
@@ -14,11 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
             valid_username,
         ],
         required=True,
-        max_length=150,
+        max_length=settings.MID_SMALL_INT_LENGTH,
     )
     email = serializers.EmailField(
         required=True,
-        max_length=254,
+        max_length=settings.BIG_INT_LENGTH,
         validators=[
             UniqueValidator(queryset=User.objects.all()),
         ],
@@ -38,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserEditSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        max_length=150,
+        max_length=settings.MID_SMALL_INT_LENGTH,
         validators=[
             UniqueValidator(queryset=User.objects.all()),
             valid_username,
@@ -75,13 +76,13 @@ class TokenSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        max_length=150,
+        max_length=settings.MID_SMALL_INT_LENGTH,
         validators=[
             valid_username,
         ],
     )
     email = serializers.EmailField(
-        max_length=254,
+        max_length=settings.BIG_INT_LENGTH,
     )
 
     class Meta:

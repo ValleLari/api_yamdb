@@ -9,9 +9,8 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-
-from reviews.models import Category, Comment, Genre, Review, Title, User
-
+from users.models import User
+from reviews.models import Category, Comment, Genre, Review, Title
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet
 from .permissions import (
